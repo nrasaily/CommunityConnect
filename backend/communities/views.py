@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.db.models import Q
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, filters
 from .models import Community, Membership
 from .serializers import CommunitySerializer
 
@@ -8,6 +8,14 @@ from .serializers import CommunitySerializer
 class CommunityListCreateView(generics.ListCreateAPIView):
     queryset = Community.objects.all().order_by("-created_at")
     serializer_class = CommunitySerializer
+    filter_backends = [filters.SearchFilter]
+
+    search_fields = [
+          "name",
+          "description",
+          "location",
+          "category",
+    ]
 
     def get_queryset(self):
         queryset = Community.objects.all().order_by("-created_at")
@@ -41,3 +49,23 @@ class CommunityListCreateView(generics.ListCreateAPIView):
           role="owner",
           status="active",
         )
+
+class CommunityDetailView(generics.RetrieveAPIView):
+    serializer_class = CommunitySerializer
+
+    def get_queryset(self):
+        queryset = Community.objects.all()
+        user = self.request.user
+
+        if not user.is_authenticated:
+            return queryset.filter(privacy="public")
+
+        return queryset.filter(
+            Q(privacy="public")
+            | Q(owner=user)
+            | Q(
+                memberships__user=user,
+                memberships__status="active"
+            )
+        ).distinct()
+    
