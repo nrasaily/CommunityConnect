@@ -1,6 +1,8 @@
 from django.db import transaction
 from django.db.models import Q
 from rest_framework import generics, permissions, filters
+from django_filters.rest_framework import DjangoFilterBackend
+
 from .models import Community, Membership
 from .serializers import CommunitySerializer
 
@@ -8,7 +10,17 @@ from .serializers import CommunitySerializer
 class CommunityListCreateView(generics.ListCreateAPIView):
     queryset = Community.objects.all().order_by("-created_at")
     serializer_class = CommunitySerializer
-    filter_backends = [filters.SearchFilter]
+
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+    ]
+
+    filterset_fields = [
+        "category",
+        "location",
+        "privacy",
+    ]
 
     search_fields = [
           "name",
