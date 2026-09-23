@@ -21,6 +21,8 @@ from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             )
 
 urlpatterns = [
+    path("", include("web.urls")),
+
     path('admin/', admin.site.urls),
     path('api/communities/', include('communities.urls')),
     
@@ -32,6 +34,5 @@ urlpatterns = [
     ),
     path("api/accounts/", include("accounts.urls")),
 
-    
 
 ]

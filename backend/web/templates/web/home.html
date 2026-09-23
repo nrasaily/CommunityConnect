@@ -1,0 +1,41 @@
+{% load static%}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CommunityConnect</title>
+  <link rel="stylesheet" href="{% static 'web/css/style.css' %}">
+
+</head>
+
+<body>
+  <header>
+    <nav>
+      <a href="{% url 'home' %}">CommunityConnect</a>
+
+      <div>
+        <a href="#">Communities</a>
+        <a href="#">Log in</a>
+        <a href="#">Sign up</a>
+      </div>
+
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h1>Find your community. Build real connections.</h1>
+
+      <p>Discover organizations, groups, and communities that match your interests and location.</p>
+
+      <a href="/api/communities/">Explore communities</a>
+    </section>
+
+  </main>
+
+</body>
+
+</html>

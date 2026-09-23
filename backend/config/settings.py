@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'accounts',
     'communities',
     'rest_framework_simplejwt.token_blacklist',
+    'web',
 ]
 
 
