@@ -14,6 +14,7 @@ class CommunityListCreateView(generics.ListCreateAPIView):
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,
+        filters.OrderingFilter,
     ]
 
     filterset_fields = [
@@ -21,12 +22,20 @@ class CommunityListCreateView(generics.ListCreateAPIView):
         "location",
         "privacy",
     ]
-
+    ordering_fields = [
+        "name",
+        "location",
+        "category",
+        "created_at",
+    ]
     search_fields = [
           "name",
           "description",
           "location",
           "category",
+    ]
+    ordering = [
+        "-created_at",
     ]
 
     def get_queryset(self):
