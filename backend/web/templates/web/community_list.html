@@ -1,0 +1,299 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Search and explore public communities."
+  >
+
+  <title>Communities | CommunityConnect</title>
+
+  
+  <link
+  rel="stylesheet"
+  href="{% static 'web/css/community_list.css' %}"
+>
+</head>
+
+<body>
+  <header class="site-header">
+    <nav class="navbar">
+      <a class="logo" href="{% url 'home' %}">
+        CommunityConnect
+      </a>
+
+      <div class="nav-links">
+        <a href="{% url 'home' %}">Home</a>
+
+        <a href="{% url 'community-list' %}">
+          Communities
+        </a>
+
+        <a href="#">About</a>
+        <a class="login-link" href="#">Log in</a>
+        <a class="signup-button" href="#">Sign up</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="communities-page">
+    <section class="communities-hero">
+      <span>Discover your people</span>
+
+      <h1>Explore communities</h1>
+
+      <p>
+        Search public organizations and groups by name,
+        interest, category, or location.
+      </p>
+    </section>
+
+    <section class="community-directory">
+      <form
+        class="directory-filters"
+        action="{% url 'community-list' %}"
+        method="get"
+      >
+        <div class="filter-field search-field">
+          <label for="directory-search">
+            Search
+          </label>
+
+          <input
+            id="directory-search"
+            name="search"
+            type="search"
+            value="{{ search_query }}"
+            placeholder="Name, description, or location"
+          >
+        </div>
+
+        <div class="filter-field">
+          <label for="category-filter">
+            Category
+          </label>
+
+          <select id="category-filter" name="category">
+            <option value="">All categories</option>
+
+            <option
+              value="arts"
+              {% if selected_category == "arts" %}selected{% endif %}
+            >
+              Arts
+            </option>
+
+            <option
+              value="education"
+              {% if selected_category == "education" %}selected{% endif %}
+            >
+              Education
+            </option>
+
+            <option
+              value="health"
+              {% if selected_category == "health" %}selected{% endif %}
+            >
+              Health
+            </option>
+
+            <option
+              value="technology"
+              {% if selected_category == "technology" %}selected{% endif %}
+            >
+              Technology
+            </option>
+
+            <option
+              value="sports"
+              {% if selected_category == "sports" %}selected{% endif %}
+            >
+              Sports
+            </option>
+
+            <option
+              value="religious"
+              {% if selected_category == "religious" %}selected{% endif %}
+            >
+              Faith
+            </option>
+
+            <option
+              value="professional"
+              {% if selected_category == "professional" %}selected{% endif %}
+            >
+              Professional
+            </option>
+
+            <option
+              value="neighborhood"
+              {% if selected_category == "neighborhood" %}selected{% endif %}
+            >
+              Neighborhood
+            </option>
+
+            <option
+              value="youth_senior"
+              {% if selected_category == "youth_senior" %}selected{% endif %}
+            >
+              Youth and Senior
+            </option>
+
+            <option
+              value="other"
+              {% if selected_category == "other" %}selected{% endif %}
+            >
+              Other
+            </option>
+          </select>
+        </div>
+
+        <button type="submit">
+          Apply filters
+        </button>
+
+        {% if search_query or selected_category %}
+          <a
+            class="clear-filters"
+            href="{% url 'community-list' %}"
+          >
+            Clear
+          </a>
+        {% endif %}
+      </form>
+
+      <div class="directory-summary">
+        <p>
+          <strong>{{ page_obj.paginator.count }}</strong>
+          public communities found
+        </p>
+
+        {% if search_query %}
+          <p>
+            Search results for
+            <strong>“{{ search_query }}”</strong>
+          </p>
+        {% endif %}
+      </div>
+
+      <div class="community-grid">
+        {% for community in page_obj %}
+          <article class="community-card">
+            <span class="community-card-category">
+              {{ community.category|title }}
+            </span>
+
+            <h2>{{ community.name }}</h2>
+
+            <p>
+              {{ community.description|truncatewords:24 }}
+            </p>
+
+            <div class="community-card-location">
+              {{ community.location|default:"Location not provided" }}
+            </div>
+
+            <a
+              class="community-card-link"
+              href="/api/communities/{{ community.id }}/"
+            >
+              View community
+            </a>
+          </article>
+        {% empty %}
+          <div class="empty-results">
+            <h2>No communities found</h2>
+
+            <p>
+              Try changing your search or category.
+            </p>
+
+            <a href="{% url 'community-list' %}">
+              View all communities
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="pagination" aria-label="Community pages">
+          {% if page_obj.has_previous %}
+            <a
+              href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}{% if selected_category %}&category={{ selected_category|urlencode }}{% endif %}"
+            >
+              Previous
+            </a>
+          {% endif %}
+
+          <span>
+            Page {{ page_obj.number }}
+            of {{ page_obj.paginator.num_pages }}
+          </span>
+
+          {% if page_obj.has_next %}
+            <a
+              href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}{% if selected_category %}&category={{ selected_category|urlencode }}{% endif %}"
+            >
+              Next
+            </a>
+          {% endif %}
+        </nav>
+      {% endif %}
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="{% url 'home' %}">
+          CommunityConnect
+        </a>
+
+        <p>
+          Helping people discover communities and build
+          meaningful connections.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <div>
+          <h3>Explore</h3>
+          <a href="{% url 'community-list' %}">Communities</a>
+          <a href="#">Categories</a>
+          <a href="#">Locations</a>
+        </div>
+
+        <div>
+          <h3>Account</h3>
+          <a href="#">Log in</a>
+          <a href="#">Sign up</a>
+          <a href="#">Profile</a>
+        </div>
+
+        <div>
+          <h3>CommunityConnect</h3>
+          <a href="#">About</a>
+          <a href="#">Contact</a>
+          <a href="#">Privacy</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>
+        &copy; {% now "Y" %} CommunityConnect.
+        All rights reserved.
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
