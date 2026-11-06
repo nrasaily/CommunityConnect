@@ -26,3 +26,5 @@ def community_list_view(request):
         "web/community_list.html",
         context,
     )
+def community_create(request):
+    return render(request, "web/community_create.html")

@@ -259,3 +259,47 @@ class RejectMembershipView(APIView):
             },
             status=status.HTTP_200_OK
         )
+    
+
+class PendingMembershipListView(APIView):
+    permission_classess = [IsAuthenticated]
+
+    def get(self, request, pk):
+        community = get_object_or_404(
+            Community,
+            pk=pk
+        )
+        if request.user != community.owner:
+            return Response(
+                {
+                    "detail": "Only the community owner can view pending join requests."
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
+        pending_memberships = Membership.objects.filter(
+            community=community,
+            status="pending"
+        ).select_related("user")
+
+        data = []
+
+        for membership in pending_memberships:
+            data.append(
+                {
+                    "membership_id": membership.id,
+                    "username": membership.user.username,
+                    "role": membership.role,
+                    "status": membership.status,
+                    "joined_at": membership.joined_at,
+                }
+            )
+        return Response(
+            {
+                "community_id": community.id,
+                "community_name": community.name,
+                "pending_count": pending_memberships.count(),
+                "pending_requests": data,
+            },
+            status=status.HTTP_200_OK
+        )
+
